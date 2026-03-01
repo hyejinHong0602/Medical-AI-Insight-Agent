@@ -36,3 +36,12 @@
    EMAIL_SENDER=your_gmail
    EMAIL_PASSWORD=your_app_password
    EMAIL_RECEIVER=receiver_email
+
+## 📈 활용 사례 (Use Case)
+- 의료 도메인 종사자의 일일 산업 트렌드 모니터링
+- AI 기술 도입을 고민하는 의료 기관의 벤치마킹 자료 수집
+- 반복적인 리서치 업무의 자동화를 통한 업무 효율성 증대
+
+## 📝 결과물
+<img width="1627" height="604" alt="image" src="https://github.com/user-attachments/assets/a207af16-b646-4d76-a3e6-0fe93a91f51e" />
+
