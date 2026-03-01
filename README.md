@@ -43,5 +43,7 @@
 - 반복적인 리서치 업무의 자동화를 통한 업무 효율성 증대
 
 ## 📝 결과물
-<img width="1627" height="604" alt="image" src="https://github.com/user-attachments/assets/a207af16-b646-4d76-a3e6-0fe93a91f51e" />
+<img width="1570" height="644" alt="image" src="https://github.com/user-attachments/assets/eb470972-1b38-486c-af0d-a03cc2157070" />
+
+
 
