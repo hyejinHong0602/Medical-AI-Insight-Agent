@@ -11,7 +11,7 @@
 - **모듈형 설계**: 검색, 분석, 요약, 전송 로직을 분리하여 유지보수와 확장성(Slack 연동 등) 확보
 
 ## 🛠 기술 스택 (Tech Stack)
-- **Framework**: LangGraph, LangChain
+- **Framework**: LangGraph
 - **LLM**: Groq (Llama-3.3-70b)
 - **Search API**: Tavily Search
 - **Embedding**: HuggingFace
