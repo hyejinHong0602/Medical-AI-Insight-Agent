@@ -46,4 +46,6 @@
 <img width="1570" height="644" alt="image" src="https://github.com/user-attachments/assets/eb470972-1b38-486c-af0d-a03cc2157070" />
 
 
+## 추후 발전 방향
+- 의료 AI 분야 뿐만 아니라, 경제, 정치, 사회, 기술 분야 나누어서 뉴스레터 형식으로 구성
 
