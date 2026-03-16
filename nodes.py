@@ -60,7 +60,12 @@ def summary_node(state: ResearchState):
 def email_delivery_node(state: ResearchState):
     sender = os.getenv("EMAIL_SENDER")
     password = os.getenv("EMAIL_PASSWORD")
-    receiver = os.getenv("EMAIL_RECEIVER")
+    
+    # 기존에는 이메일 지정
+    # receiver = os.getenv("EMAIL_RECEIVER")
+    
+    # 직접 이메일 입력할 수 있게 수정
+    receiver = state.get("email") or os.getenv("EMAIL_RECEIVER")
 
     if not all([sender, password, receiver]):
         print("❌ 이메일 환경 변수가 설정되지 않았습니다.")

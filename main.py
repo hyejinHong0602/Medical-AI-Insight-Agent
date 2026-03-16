@@ -57,9 +57,87 @@
 
 
 # 260316
+# import os
+# from fastapi import FastAPI, HTTPException
+# from pydantic import BaseModel
+# from dotenv import load_dotenv
+
+# # 기존에 만드신 노드와 상태 구조 가져오기
+# from nodes import search_node, analysis_node, summary_node, email_delivery_node
+# from state import ResearchState
+# from langgraph.graph import StateGraph, START, END
+
+# # 1. 환경 변수 로드
+# load_dotenv()
+
+# # 2. LangGraph 워크플로우 정의 (기존 로직 유지)
+# builder = StateGraph(ResearchState)
+# builder.add_node("search_news", search_node)
+# builder.add_node("analyze_terms", analysis_node)
+# builder.add_node("summarize", summary_node)
+# builder.add_node("deliver_email", email_delivery_node)
+
+# builder.add_edge(START, "search_news")
+# builder.add_edge("search_news", "analyze_terms")
+# builder.add_edge("analyze_terms", "summarize")
+# builder.add_edge("summarize", "deliver_email")
+# builder.add_edge("deliver_email", END)
+
+# # 그래프 컴파일
+# graph = builder.compile()
+
+# # 3. FastAPI 앱 초기화
+# app = FastAPI(
+#     title="Medical AI Insight Agent API",
+#     description="뉴스 검색부터 요약, 이메일 발송까지 수행하는 AI 에이전트 서비스"
+# )
+
+# # 입력 데이터 형식 정의
+# class AgentRequest(BaseModel):
+#     topic: str = "의료 데이터 활용과 생성형 AI 기술 트렌드"
+
+# # 4. API 엔드포인트 정의
+# @app.get("/")
+# def read_root():
+#     return {"message": "Medical AI Agent API is running!"}
+
+# @app.post("/run-agent")
+# async def run_agent(request: AgentRequest):
+#     """
+#     에이전트를 실행하고 최종 요약 결과를 반환합니다.
+#     동시에 설정된 수신자에게 이메일을 발송합니다.
+#     """
+#     initial_input = {
+#         "topic": request.topic,
+#         "raw_news": [],
+#         "term_glossary": {},
+#         "final_summary": ""
+#     }
+    
+#     try:
+#         # 에이전트 실행
+#         result = graph.invoke(initial_input)
+        
+#         return {
+#             "status": "success",
+#             "topic": request.topic,
+#             "analysis": result.get('term_glossary', {}).get('terms'),
+#             "summary": result.get('final_summary'),
+#             "message": "리포트 생성 및 이메일 발송이 완료되었습니다."
+#         }
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
+
+# # 5. 로컬 테스트용 실행 설정
+# if __name__ == "__main__":
+#     import uvicorn
+#     print("🚀 서버를 시작합니다. http://127.0.0.1:8000/docs 에서 테스트하세요..")
+#     uvicorn.run(app, host="127.0.0.1", port=8000)
+
+# 260317 직접 사용자가 이메일 입력할 수 있게 수정
 import os
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from dotenv import load_dotenv
 
 # 기존에 만드신 노드와 상태 구조 가져오기
@@ -70,7 +148,7 @@ from langgraph.graph import StateGraph, START, END
 # 1. 환경 변수 로드
 load_dotenv()
 
-# 2. LangGraph 워크플로우 정의 (기존 로직 유지)
+# 2. LangGraph 워크플로우 정의
 builder = StateGraph(ResearchState)
 builder.add_node("search_news", search_node)
 builder.add_node("analyze_terms", analysis_node)
@@ -89,12 +167,13 @@ graph = builder.compile()
 # 3. FastAPI 앱 초기화
 app = FastAPI(
     title="Medical AI Insight Agent API",
-    description="뉴스 검색부터 요약, 이메일 발송까지 수행하는 AI 에이전트 서비스"
+    description="사용자가 지정한 이메일로 최신 의료 AI 리포트를 전송하는 서비스입니다."
 )
 
-# 입력 데이터 형식 정의
+# 입력 데이터 형식 정의 (이메일 필드 추가)
 class AgentRequest(BaseModel):
     topic: str = "의료 데이터 활용과 생성형 AI 기술 트렌드"
+    email: EmailStr  # 사용자가 리포트를 받을 이메일 주소
 
 # 4. API 엔드포인트 정의
 @app.get("/")
@@ -104,32 +183,36 @@ def read_root():
 @app.post("/run-agent")
 async def run_agent(request: AgentRequest):
     """
-    에이전트를 실행하고 최종 요약 결과를 반환합니다.
-    동시에 설정된 수신자에게 이메일을 발송합니다.
+    사용자가 입력한 이메일 주소로 의료 AI 뉴스 리포트를 생성하여 발송합니다.
     """
+    # 에이전트 상태 초기화 (입력받은 이메일을 상태에 포함)
     initial_input = {
         "topic": request.topic,
+        "email": request.email,  # 이메일 전달
         "raw_news": [],
         "term_glossary": {},
         "final_summary": ""
     }
     
     try:
-        # 에이전트 실행
+        # 에이전트 실행 (Graph 흐름 시작)
+        # ⚠️ email_delivery_node 내에서 os.getenv('EMAIL_RECEIVER') 대신 
+        # state['email']을 사용하도록 nodes.py가 수정되어 있어야 합니다.
         result = graph.invoke(initial_input)
         
         return {
             "status": "success",
+            "target_email": request.email,
             "topic": request.topic,
             "analysis": result.get('term_glossary', {}).get('terms'),
             "summary": result.get('final_summary'),
-            "message": "리포트 생성 및 이메일 발송이 완료되었습니다."
+            "message": f"[{request.email}]로 리포트 전송이 완료되었습니다."
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# 5. 로컬 테스트용 실행 설정
+# 5. 실행 설정
 if __name__ == "__main__":
     import uvicorn
-    print("🚀 서버를 시작합니다. http://127.0.0.1:8000/docs 에서 테스트하세요..")
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    # 외부 접속 허용을 위해 host를 0.0.0.0으로 설정하는 것이 좋습니다 (AWS 배포용)
+    uvicorn.run(app, host="0.0.0.0", port=8000)

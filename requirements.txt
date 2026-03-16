@@ -11,3 +11,5 @@ python-dotenv
 
 # [Tools] 외부 뉴스 검색 서비스 연결
 tavily-python
+
+email-validator
