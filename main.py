@@ -131,5 +131,5 @@ async def run_agent(request: AgentRequest):
 # 5. 로컬 테스트용 실행 설정
 if __name__ == "__main__":
     import uvicorn
-    print("🚀 서버를 시작합니다. http://127.0.0.1:8000/docs 에서 테스트하세요.")
+    print("🚀 서버를 시작합니다. http://127.0.0.1:8000/docs 에서 테스트하세요..")
     uvicorn.run(app, host="127.0.0.1", port=8000)
