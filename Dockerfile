@@ -11,4 +11,5 @@ COPY . .
 
 EXPOSE 8000
 
+# 컨테이너가 "실행"된 직후 수행할 최종 명령. Dockerfile당 한 번만 사용할 수 있음
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
