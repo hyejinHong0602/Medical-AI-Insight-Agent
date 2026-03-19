@@ -17,7 +17,7 @@ def search_node(state: ResearchState):
     
     # 쿼리를 훨씬 더 공격적으로 바꿉니다.
     # 'current events', 'breaking news', 'today' 같은 단어를 섞어주세요.
-    query = f"healthcare AI and medical data news published strictly on {current_date} or late February 2026"
+    query = f"healthcare AI and medical data news published strictly on {current_date}"
     
     from tools.search_tool import search_medical_ai_news
     news = search_medical_ai_news.invoke(query)
@@ -33,10 +33,10 @@ def analysis_node(state: ResearchState):
     content = str(state['raw_news'])
     # LLM이 딴소리 못하게 '제공된 텍스트'라는 점을 강조합니다.
     prompt = (
-        f"당신은 전문 리서치 어시스턴트입니다. 아래 제공된 [검색 결과] 리스트에 실제로 언급된 "
-        f"최신 기술 용어나 영문 약어 3개를 찾아 풀이해주세요.\n\n"
-        f"**주의: 당신의 사전 지식을 사용하지 말고, 오직 검색 결과에 나온 구체적인 고유명사나 기술 위주로 선택하세요.**\n"
-        f"[검색 결과]:\n{content}"
+        f"You are a professional research assistant."
+        f"Please find and explain three of the latest tech terms or English abbreviations actually mentioned in the [Search Results] list provided below.\n\n"
+        f"**Note: Do not use your prior knowledge; select based solely on specific proper nouns or technologies found in the search results.**\n"
+        f"[Search Results]:\n{content}"
     )
     response = llm.invoke([HumanMessage(content=prompt)])
     return {"term_glossary": {"terms": response.content}}
@@ -46,12 +46,12 @@ def summary_node(state: ResearchState):
     glossary = state['term_glossary']
     # '오늘 날짜'의 뉴스를 요약하라고 명시합니다.
     prompt = (
-        f"당신은 의료 AI 전문 분석가입니다. 아래 [검색 결과]를 바탕으로 '오늘의 가장 중요한 변화'를 요약하세요.\n"
-        f"1. 일반적인 이야기가 아닌, 검색 결과에 등장한 구체적인 회사명, 제품명, 혹은 연구 수치를 포함하세요.\n"
-        f"2. 출처 URL을 각 항목 끝에 반드시 첨부하세요.\n"
-        f"3. 한글로 작성하되 전문 용어는 병기하세요.\n\n"
-        f"[검색 결과]:\n{content}\n"
-        f"[참고 용어]:\n{glossary}"
+        f"You are a medical AI specialist analyst. Summarize 'Today's Most Important Changes' based on the [Search Results] below.\n"
+        f"1. Do not include general statements; include specific company names, product names, or research figures that appeared in the search results.\n"
+        f"2. Be sure to attach the source URL at the end of each item.\n"
+        f". Write in Korean, but include technical terms.\n\n"
+        f"[Search Results]:\n{content}\n"
+        f"[Reference Terms]:\n{glossary}"
     )
     response = llm.invoke([HumanMessage(content=prompt)])
     return {"final_summary": response.content}
